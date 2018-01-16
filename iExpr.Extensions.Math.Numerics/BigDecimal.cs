@@ -54,7 +54,7 @@ namespace iExpr.Extensions.Math.Numerics
     {
         public static BigDecimal GetOne(int precision)
         {
-            return new BigDecimal(GetTenPow(precision),precision);
+            return new BigDecimal(1,precision);
         }
 
         public static BigDecimal GetMinusOne(int precision)

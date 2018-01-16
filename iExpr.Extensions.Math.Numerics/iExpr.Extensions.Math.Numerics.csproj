@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0</Version>
+    <Version>0.1.0.1</Version>
     <Authors>Stardust D.L.</Authors>
     <Company>Stardust D.L.</Company>
     <Description>A tiny library about some numerics.
