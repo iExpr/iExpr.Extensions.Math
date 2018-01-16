@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.1.0</Version>
+    <Authors>Stardust D.L.</Authors>
+    <Company>Stardust D.L.</Company>
+    <Description>A tiny library about some numerics.
+Now it contains BigDecimal (based on BigNumber)which supports:
+conversion from built-in numeric, and parsing from strings, and ToString.</Description>
+    <Copyright>LGPL-3.0</Copyright>
+    <PackageLicenseUrl>https://github.com/iExpr/iExpr.Extensions.Math/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/iExpr/iExpr.Extensions.Math</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/iExpr/iExpr.Extensions.Math</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>Math,Numerics,BigDecimal</PackageTags>
+  </PropertyGroup>
+
+</Project>

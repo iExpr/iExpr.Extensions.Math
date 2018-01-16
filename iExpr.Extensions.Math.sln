@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "iExpr.Extensions.Math", "iExpr.Extensions.Math\iExpr.Extensions.Math.csproj", "{F83A0D90-3151-4FB8-8771-C34372A53FDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{799811E3-6591-416B-A2E4-5C0C34A631F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTest", "UnitTest\UnitTest.csproj", "{799811E3-6591-416B-A2E4-5C0C34A631F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iExpr.Extensions.Math.Numerics", "iExpr.Extensions.Math.Numerics\iExpr.Extensions.Math.Numerics.csproj", "{6D0F16D7-877D-487B-B562-5AD077F67D74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{799811E3-6591-416B-A2E4-5C0C34A631F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{799811E3-6591-416B-A2E4-5C0C34A631F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{799811E3-6591-416B-A2E4-5C0C34A631F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D0F16D7-877D-487B-B562-5AD077F67D74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D0F16D7-877D-487B-B562-5AD077F67D74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D0F16D7-877D-487B-B562-5AD077F67D74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D0F16D7-877D-487B-B562-5AD077F67D74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

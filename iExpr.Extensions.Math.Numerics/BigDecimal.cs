@@ -4,45 +4,84 @@ using System.Numerics;
 using System.Text;
 
 namespace iExpr.Extensions.Math.Numerics
-{
+{ 
+    public class BigDecimalFactory
+    {
+        public int Precision { get; private set; }
+
+        public BigDecimal Get()
+        {
+            return new BigDecimal(0, Precision);
+        }
+
+        public BigDecimal Get(double d)
+        {
+            var v = new BigDecimal(d, Precision);
+            return v;
+        }
+
+        public BigDecimal Get(decimal d)
+        {
+            var v = new BigDecimal(d, Precision);
+            return v;
+        }
+
+        public BigDecimal Get(int d)
+        {
+            var v = new BigDecimal(d, Precision);
+            return v;
+        }
+
+        public BigDecimal Get(long d)
+        {
+            var v = new BigDecimal(d, Precision);
+            return v;
+        }
+
+        public BigDecimal Get(BigInteger d)
+        {
+            var v = new BigDecimal(d, Precision);
+            return v;
+        }
+
+        public BigDecimalFactory(int precision)
+        {
+            Precision = precision;
+        }
+    }
+
     public struct BigDecimal : IComparable, IComparable<BigDecimal>, IEquatable<BigDecimal>
     {
-        private static readonly BigDecimal s_bnOneInt = new BigDecimal(BigInteger.One);
-        private static readonly BigDecimal s_bnZeroInt = new BigDecimal(BigInteger.Zero);
-        private static readonly BigDecimal s_bnMinusOneInt = new BigDecimal(BigInteger.MinusOne);
+        public static BigDecimal GetOne(int precision)
+        {
+            return new BigDecimal(GetTenPow(precision),precision);
+        }
+
+        public static BigDecimal GetMinusOne(int precision)
+        {
+            return -GetOne(precision);
+        }
+
+        public static BigDecimal GetZero(int precision)
+        {
+            return new BigDecimal(0, precision);
+        }
 
         static BigInteger GetTenPow(int n)
         {
+            if (n == 0) return 1;
+            else if (n == 1) return 10;
+            /*if (n < 1000)
+            {
+                return _TenPowor[n];
+            }*/
             return BigInteger.Pow(10, n);
         }
 
-        BigInteger Integer { get; set; }
-        BigInteger Decimal { get; set; }
+        public BigInteger _Value { get; set; }
 
         public int Precision { get; private set; }
-
-        private void Adjust()
-        {
-            int l = Integer.Sign, r = Decimal.Sign;
-            var p = GetTenPow(Precision);
-            if (BigInteger.Abs(Decimal) >= p)
-            {
-                Integer += BigInteger.DivRem(Decimal, p, out var rem);
-                Decimal = rem;
-            }
-            if (l == r || Integer.IsZero || Decimal.IsZero) return;
-            else if (l < r)
-            {
-                Integer++;
-                Decimal = p - Decimal;
-            }
-            else
-            {
-                Integer--;
-                Decimal = p - Decimal;
-            }
-        }
-
+        
         public void SetPrecision(int precision)
         {
             if (Precision == precision) return;
@@ -51,7 +90,7 @@ namespace iExpr.Extensions.Math.Numerics
                 while (Precision < precision)
                 {
                     Precision++;
-                    Decimal *= 10;
+                    _Value *= 10;
                 }
             }
             else
@@ -59,7 +98,7 @@ namespace iExpr.Extensions.Math.Numerics
                 while (Precision > precision)
                 {
                     Precision--;
-                    Decimal /= 10;
+                    _Value /= 10;
                 }
             }
         }
@@ -68,33 +107,33 @@ namespace iExpr.Extensions.Math.Numerics
         {
             if (d == 0)
             {
-                Integer = 0; Decimal = 0;
+                _Value = 0;
             }
             else if (d > 0)
             {
-                Integer = new BigInteger(d);
+                _Value = new BigInteger(d);
                 d -= System.Math.Floor(d);
-                Decimal = new BigInteger(0);
                 for (int i = 1; i <= Precision; i++)
                 {
                     d *= 10;
-                    Decimal *= 10;
-                    Decimal += new BigInteger(d);
+                    _Value *= 10;
+                    _Value += new BigInteger(d);
                     d -= System.Math.Floor(d);
                 }
             }
             else
             {
-                Integer = new BigInteger(d);
-                d -= System.Math.Ceiling(d);
-                Decimal = new BigInteger(0);
+                var _d = System.Math.Abs(d);
+                _Value = new BigInteger(_d);
+                _d -= System.Math.Floor(_d);
                 for (int i = 1; i <= Precision; i++)
                 {
-                    d *= 10;
-                    Decimal *= 10;
-                    Decimal += new BigInteger(d);
-                    d -= System.Math.Ceiling(d);
+                    _d *= 10;
+                    _Value *= 10;
+                    _Value += new BigInteger(_d);
+                    _d -= System.Math.Floor(_d);
                 }
+                _Value = -_Value;
             }
         }
 
@@ -106,67 +145,55 @@ namespace iExpr.Extensions.Math.Numerics
                 throw new OverflowException();
             if (d == 0)
             {
-                Integer = 0; Decimal = 0;
+                _Value = 0;
             }
             else if (d > 0)
             {
-                Integer = new BigInteger(d);
+                _Value = new BigInteger(d);
                 d -= System.Math.Floor(d);
-                Decimal = new BigInteger(0);
                 for (int i = 1; i <= Precision; i++)
                 {
                     d *= 10;
-                    Decimal *= 10;
-                    Decimal += new BigInteger(d);
+                    _Value *= 10;
+                    _Value += new BigInteger(d);
                     d -= System.Math.Floor(d);
                 }
             }
             else
             {
-                Integer = new BigInteger(d);
-                d -= System.Math.Ceiling(d);
-                Decimal = new BigInteger(0);
+                var _d = System.Math.Abs(d);
+                _Value = new BigInteger(_d);
+                _d -= System.Math.Floor(_d);
                 for (int i = 1; i <= Precision; i++)
                 {
-                    d *= 10;
-                    Decimal *= 10;
-                    Decimal += new BigInteger(d);
-                    d -= System.Math.Ceiling(d);
+                    _d *= 10;
+                    _Value *= 10;
+                    _Value += new BigInteger(_d);
+                    _d -= System.Math.Floor(_d);
                 }
+                _Value = -_Value;
             }
         }
 
         #region public properties
+        
+        public BigInteger Decimal { get => _Value % (GetTenPow(Precision)); }
 
-        public static BigDecimal Zero
-        {
-            get { return s_bnZeroInt; }
-        }
-
-        public static BigDecimal One
-        {
-            get { return s_bnOneInt; }
-        }
-
-        public static BigDecimal MinusOne
-        {
-            get { return s_bnMinusOneInt; }
-        }
+        public BigInteger Integer { get => _Value / (GetTenPow(Precision)); }
 
         public bool IsInteger { get { return Decimal.IsZero; } }
 
-        public bool IsZero { get {  return Integer.IsZero && IsInteger; } }
+        public bool IsZero { get { return _Value.IsZero; } }
 
-        public bool IsOne { get {  return Integer.IsOne && IsInteger; } }
+        public bool IsOne { get { return Integer.IsOne && IsInteger; } }
 
-        public bool IsEven { get {  return Integer.IsEven && IsInteger; } }
+        public bool IsEven { get { return Integer.IsEven && IsInteger; } }
 
         public int Sign
         {
             get
             {
-                var r = Integer.Sign;
-                return r == 0 ? Decimal.Sign : r;
+                return _Value.Sign;
             }
         }
 
@@ -174,30 +201,26 @@ namespace iExpr.Extensions.Math.Numerics
 
         #region ctor methods
 
-        public BigDecimal(BigInteger val, int precision = 20)
+        public BigDecimal(BigInteger val, int precision = 30)
         {
             Precision = precision;
-            Integer = val;
+            _Value = val*GetTenPow(precision);
         }
-        public BigDecimal(Int32 val, int precision = 20)
+        public BigDecimal(Int32 val, int precision=30) : this(new BigInteger(val), precision) { }
+        public BigDecimal(UInt32 val, int precision = 30) : this(new BigInteger(val), precision) { }
+        public BigDecimal(Int64 val, int precision = 30) : this(new BigInteger(val), precision) { }
+        public BigDecimal(UInt64 val, int precision = 30) : this(new BigInteger(val), precision) { }
+
+        public BigDecimal(double val, int precision=30)
         {
-            Precision = precision;
-            Integer = new BigInteger(val);
+            this.Precision = precision;
+            this.SetValue(val);
         }
-        public BigDecimal(UInt32 val, int precision = 20)
+
+        public BigDecimal(decimal val, int precision = 30)
         {
-            Precision = precision;
-            Integer = new BigInteger(val);
-        }
-        public BigDecimal(Int64 val, int precision = 20)
-        {
-            Precision = precision;
-            Integer = new BigInteger(val);
-        }
-        public BigDecimal(UInt64 val, int precision = 20)
-        {
-            Precision = precision;
-            Integer = new BigInteger(val);
+            this.Precision = precision;
+            this.SetValue(val);
         }
 
         #endregion ctor methods
@@ -209,7 +232,7 @@ namespace iExpr.Extensions.Math.Numerics
 
         public static BigDecimal Abs(BigDecimal value)
         {
-            return (value >= BigDecimal.Zero) ? value : -value;
+            return (value.Sign>=0) ? value : -value;
         }
 
         public static BigDecimal Add(BigDecimal left, BigDecimal right)
@@ -239,11 +262,11 @@ namespace iExpr.Extensions.Math.Numerics
 
         public static BigDecimal DivRem(BigDecimal dividend, BigDecimal divisor, out BigDecimal remainder)
         {
-            var d = dividend / divisor;
-            remainder = dividend - d * divisor;
-            return d;
+            //if (dividend.Precision != divisor.Precision) throw new ArgumentException();
+            var d = (dividend / divisor).Integer;
+            remainder = dividend - new BigDecimal(d,divisor.Precision) * divisor;
+            return new BigDecimal(d,divisor.Precision);
         }
-
 
         public static BigDecimal Negate(BigDecimal value)
         {
@@ -266,7 +289,7 @@ namespace iExpr.Extensions.Math.Numerics
 
         public static BigDecimal ModPow(BigDecimal value, BigInteger exponent, BigDecimal modulus)
         {
-            BigDecimal ans = One;
+            BigDecimal ans = GetOne(value.Precision);
             while (!exponent.IsZero)
             {
                 if (!exponent.IsEven)
@@ -281,9 +304,24 @@ namespace iExpr.Extensions.Math.Numerics
             return ans;
         }
 
+        public static BigDecimal Pow(BigDecimal value, BigInteger exponent)
+        {
+            BigDecimal ans = GetOne(value.Precision);
+            while (!exponent.IsZero)
+            {
+                if (!exponent.IsEven)
+                {
+                    ans *= value;
+                }
+                value *= value;
+                exponent >>= 1;
+            }
+            return ans;
+        }
+
         public static BigDecimal Pow(BigDecimal value, UInt32 exponent)
         {
-            BigDecimal ans = One;
+            BigDecimal ans = GetOne(value.Precision);
             while (exponent > 0)
             {
                 if ((exponent & 1) == 1) ans *= value;
@@ -295,21 +333,22 @@ namespace iExpr.Extensions.Math.Numerics
 
         // -------- SECTION: public static operators -----------------*
         #region public static operators
+
         public static implicit operator BigDecimal(Byte value)
         {
-            return new BigDecimal(value);
+            return new BigDecimal(value,20);
         }
-        
+
         public static implicit operator BigDecimal(SByte value)
         {
-            return new BigDecimal(value);
+            return new BigDecimal(value, 20);
         }
 
         public static implicit operator BigDecimal(Int16 value)
         {
-            return new BigDecimal(value);
+            return new BigDecimal(value, 20);
         }
-        
+
         public static implicit operator BigDecimal(UInt16 value)
         {
             return new BigDecimal(value);
@@ -335,24 +374,24 @@ namespace iExpr.Extensions.Math.Numerics
             return new BigDecimal(value);
         }
 
-        
+
         public static implicit operator BigDecimal(ulong value)
         {
             return new BigDecimal(value);
         }
         public static implicit operator BigDecimal(Single d)
         {
-            var r = new BigDecimal(); r.SetValue(d);
+            var r = new BigDecimal(d);
             return r;
         }
         public static implicit operator BigDecimal(Double d)
         {
-            var r = new BigDecimal(); r.SetValue(d);
+            var r = new BigDecimal(d);
             return r;
         }
         public static implicit operator BigDecimal(Decimal d)
         {
-            var r = new BigDecimal(); r.SetValue(d);
+            var r = new BigDecimal(d);
             return r;
         }
 
@@ -360,7 +399,7 @@ namespace iExpr.Extensions.Math.Numerics
         {
             return checked((byte)((int)value));
         }
-        
+
         public static explicit operator SByte(BigDecimal value)
         {
             return checked((sbyte)((int)value));
@@ -371,7 +410,7 @@ namespace iExpr.Extensions.Math.Numerics
             return checked((short)((int)value));
         }
 
-        
+
         public static explicit operator UInt16(BigDecimal value)
         {
             return checked((ushort)((int)value));
@@ -382,7 +421,7 @@ namespace iExpr.Extensions.Math.Numerics
             return (Int32)value.Integer;
         }
 
-        
+
         public static explicit operator UInt32(BigDecimal value)
         {
             return (UInt32)value.Integer;
@@ -393,7 +432,7 @@ namespace iExpr.Extensions.Math.Numerics
             return (Int64)value.Integer;
         }
 
-        
+
         public static explicit operator UInt64(BigDecimal value)
         {
             return (UInt64)value.Integer;
@@ -414,10 +453,14 @@ namespace iExpr.Extensions.Math.Numerics
             return decimal.Parse(value.ToString());
         }
 
+        public static explicit operator BigInteger(BigDecimal value)
+        {
+            return value.Integer;
+        }
+
         public static BigDecimal operator -(BigDecimal value)
         {
-            value.Integer = -value.Integer;
-            value.Decimal = -value.Decimal;
+            value._Value = -value._Value;
             return value;
         }
 
@@ -425,71 +468,76 @@ namespace iExpr.Extensions.Math.Numerics
         {
             return value;
         }
-
-
+        
         public static BigDecimal operator ++(BigDecimal value)
         {
-            return value + BigDecimal.One;
+            return value + GetOne(value.Precision);
         }
 
         public static BigDecimal operator --(BigDecimal value)
         {
-            return value - BigDecimal.One;
+            return value - GetOne(value.Precision);
         }
-
 
         public static BigDecimal operator +(BigDecimal left, BigDecimal right)
         {
+            if (left.Precision != right.Precision)
+            {
+                int mx = System.Math.Max(left.Precision, right.Precision);
+                left.SetPrecision(mx);right.SetPrecision(mx);
+            }
             if (right.IsZero) return left;
             if (left.IsZero) return right;
-            BigDecimal res = new BigDecimal() { Precision = System.Math.Max(left.Precision, right.Precision) };
-            left.SetPrecision(res.Precision); right.SetPrecision(res.Precision);
-            //int l = left.Sign, r = right.Sign;
-            res.Integer = left.Integer + right.Integer;
-            res.Decimal = left.Decimal + right.Decimal;
-            res.Adjust();
+            BigDecimal res = new BigDecimal() { Precision = left.Precision };
+            res._Value = left._Value + right._Value;
             return res;
         }
 
         public static BigDecimal operator -(BigDecimal left, BigDecimal right)
         {
+            if (left.Precision != right.Precision)
+            {
+                int mx = System.Math.Max(left.Precision, right.Precision);
+                left.SetPrecision(mx); right.SetPrecision(mx);
+            }
             if (right.IsZero) return left;
             if (left.IsZero) return -right;
-            BigDecimal res = new BigDecimal() { Precision = System.Math.Max(left.Precision, right.Precision) };
-            left.SetPrecision(res.Precision); right.SetPrecision(res.Precision);
-            //int l = left.Sign, r = right.Sign;
-            res.Integer = left.Integer - right.Integer;
-            res.Decimal = left.Decimal - right.Decimal;
-            res.Adjust();
+            BigDecimal res = new BigDecimal() { Precision = left.Precision };
+            res._Value = left._Value - right._Value;
             return res;
         }
 
         public static BigDecimal operator *(BigDecimal left, BigDecimal right)
         {
-            if (left.IsZero) return Zero;
-            if (right.IsZero) return Zero;
+            if (left.Precision != right.Precision)
+            {
+                int mx = System.Math.Max(left.Precision, right.Precision);
+                left.SetPrecision(mx); right.SetPrecision(mx);
+            }
+            if (left.IsZero) return GetZero(left.Precision);
+            if (right.IsZero) return GetZero(right.Precision);
             if (left.IsOne) return right;
             if (right.IsOne) return left;
             //if (left.IsOne && left.Sign==-1) return -right;
             //if (right.IsOne && right.Sign == -1) return -left;
 
             bool flg = left.Sign == right.Sign;
-
-            BigDecimal res = new BigDecimal() { Precision = left.Precision+right.Precision };
-            //left.SetPrecision(res.Precision); right.SetPrecision(res.Precision);
-            //int l = left.Sign, r = right.Sign;
-                res.Integer = BigInteger.Abs(left.Integer) * BigInteger.Abs(right.Integer);
-                res.Decimal = BigInteger.Abs(left.Decimal) * BigInteger.Abs(right.Decimal);
-            
-            return flg?res:-res;
+            BigDecimal res = new BigDecimal() { Precision = left.Precision };
+            res._Value = BigInteger.Abs(left._Value) * BigInteger.Abs(right._Value)/GetTenPow(res.Precision);
+            return flg ? res : -res;
         }
 
         public static BigDecimal operator /(BigDecimal dividend, BigDecimal divisor)
         {
+            if (dividend.Precision != divisor.Precision)
+            {
+                int mx = System.Math.Max(dividend.Precision, divisor.Precision);
+                dividend.SetPrecision(mx); divisor.SetPrecision(mx);
+            }
             if (divisor.IsZero) throw new DivideByZeroException();
             if (dividend.IsZero)
             {
-                return Zero;
+                GetZero(dividend.Precision);
             }
             if (divisor.IsOne)
             {
@@ -498,31 +546,10 @@ namespace iExpr.Extensions.Math.Numerics
             //if (left.IsOne && left.Sign==-1) return -right;
             //if (right.IsOne && right.Sign == -1) return -left;
             bool flg = dividend.Sign == divisor.Sign;
-            dividend = Abs(dividend);divisor = Abs(divisor);
-            BigDecimal res = new BigDecimal() { Precision = System.Math.Max(dividend.Precision, divisor.Precision) };
-            dividend.SetPrecision(res.Precision); divisor.SetPrecision(res.Precision);
-            var p = GetTenPow(res.Precision);
-            var up = dividend.Integer * p + dividend.Decimal;
-            var down = divisor.Integer * p + divisor.Decimal;
-
-            BigInteger rem;
-            int cnt = 0;
-            if (up >= down)
-            {
-                res.Integer = BigInteger.DivRem(up, down, out rem);
-            }
-            else rem = up;
-            while (cnt < res.Precision && !rem.IsZero)
-            {
-                while (rem < down)//开始时rem一定小于down
-                {
-                    rem *= 10;
-                    cnt++;
-                }
-                var dg = BigInteger.DivRem(rem, down, out rem);
-                res.Decimal += dg * GetTenPow(res.Precision - cnt);
-            }
-            return flg?res:-res;
+            
+            BigDecimal res = new BigDecimal() { Precision = dividend.Precision };
+            res._Value = BigInteger.Abs(dividend._Value)* GetTenPow(res.Precision) / BigInteger.Abs(divisor._Value);
+            return flg ? res : -res;
         }
 
         public static BigDecimal operator %(BigDecimal dividend, BigDecimal divisor)
@@ -606,63 +633,63 @@ namespace iExpr.Extensions.Math.Numerics
             return !right.Equals(left);
         }
 
-        
+
         public static bool operator <(BigDecimal left, UInt64 right)
         {
             return left.CompareTo(right) < 0;
         }
-        
+
         public static bool operator <=(BigDecimal left, UInt64 right)
         {
             return left.CompareTo(right) <= 0;
         }
-        
+
         public static bool operator >(BigDecimal left, UInt64 right)
         {
             return left.CompareTo(right) > 0;
         }
-        
+
         public static bool operator >=(BigDecimal left, UInt64 right)
         {
             return left.CompareTo(right) >= 0;
         }
-        
+
         public static bool operator ==(BigDecimal left, UInt64 right)
         {
             return left.Equals(right);
         }
-        
+
         public static bool operator !=(BigDecimal left, UInt64 right)
         {
             return !left.Equals(right);
         }
 
-        
+
         public static bool operator <(UInt64 left, BigDecimal right)
         {
             return right.CompareTo(left) > 0;
         }
-        
+
         public static bool operator <=(UInt64 left, BigDecimal right)
         {
             return right.CompareTo(left) >= 0;
         }
-        
+
         public static bool operator >(UInt64 left, BigDecimal right)
         {
             return right.CompareTo(left) < 0;
         }
-        
+
         public static bool operator >=(UInt64 left, BigDecimal right)
         {
             return right.CompareTo(left) <= 0;
         }
-        
+
         public static bool operator ==(UInt64 left, BigDecimal right)
         {
             return right.Equals(left);
         }
-        
+
         public static bool operator !=(UInt64 left, BigDecimal right)
         {
             return !right.Equals(left);
@@ -673,42 +700,69 @@ namespace iExpr.Extensions.Math.Numerics
         #region public instance methods
 
         public override bool Equals(object obj)
-        { 
-            if (!(obj is BigDecimal))
-                return false;
+        {
+            switch (obj)
+            {
+                case BigDecimal d: return Equals(d);
+                case BigInteger d:return Equals(d);
+                case int d: return Equals(d);
+                case long d: return Equals(d);
+                case uint d: return Equals(d);
+                case UInt64 d: return Equals(d);
+                case short d: return Equals(d);
+                case UInt16 d: return Equals(d);
+                case double d: return Equals(d);
+                case float d: return Equals(d);
+                case decimal d: return Equals(d);
+            }
             return Equals((BigDecimal)obj);
         }
 
         public bool Equals(Int64 other)
         {
-            return this.Equals((BigDecimal)other);
+            return this.Equals(new BigDecimal(other,Precision));
         }
 
         public bool Equals(UInt64 other)
         {
-            return this.Equals((BigDecimal)other);
+            return this.Equals(new BigDecimal(other, Precision));
         }
 
         public bool Equals(BigInteger other)
         {
-            return this.Equals((BigDecimal)other);
+            return this.Equals(new BigDecimal(other, Precision));
+        }
+
+        public bool Equals(double other)
+        {
+            return this.Equals(new BigDecimal(other, Precision));
+        }
+
+        public bool Equals(decimal other)
+        {
+            return this.Equals(new BigDecimal(other, Precision));
+        }
+
+        public bool Equals(float other)
+        {
+            return this.Equals(new BigDecimal(other, Precision));
         }
 
         public int CompareTo(Int64 other)
         {
-            return this.CompareTo((BigDecimal)other);
+            return this.CompareTo(new BigDecimal(other, Precision));
         }
-        
+
         public int CompareTo(UInt64 other)
         {
-            return this.CompareTo((BigDecimal)other);
+            return this.CompareTo(new BigDecimal(other, Precision));
         }
 
         public int CompareTo(BigInteger other)
         {
-            return this.CompareTo((BigDecimal)other);
+            return this.CompareTo(new BigDecimal(other, Precision));
         }
-        
+
         public int CompareTo(Object obj)
         {
             if (obj == null)
@@ -720,24 +774,42 @@ namespace iExpr.Extensions.Math.Numerics
 
         public int CompareTo(BigDecimal v)
         {
-            int k = ((IComparable<BigInteger>)Integer).CompareTo(v.Integer);
-            if (k != 0) return k;
-            if (Precision == v.Precision) return ((IComparable<BigInteger>)Decimal).CompareTo(v.Decimal);
-            else if (Precision > v.Precision)
+            var x = this;
+            if (x.Precision != v.Precision)
             {
-                return ((IComparable<BigInteger>)Decimal).CompareTo(v.Decimal * GetTenPow(Precision - v.Precision));
+                int mx = System.Math.Max(x.Precision, v.Precision);
+                x.SetPrecision(mx); v.SetPrecision(mx);
             }
-            else
-            {
-                return ((IComparable<BigInteger>)Decimal).CompareTo(v.Decimal / GetTenPow(Precision - v.Precision));
-            }
+            return x._Value.CompareTo(v._Value);
             //return  ? k : ((IComparable<BigInteger>)Decimal).CompareTo(v.Decimal);
         }
 
-        public bool Equals(BigDecimal other)
+        public bool Equals(BigDecimal v)
         {
             //Attention this!
-            return this.CompareTo(other) == 0;
+            var x = this;
+            if (x.Precision != v.Precision)
+            {
+                int mx = System.Math.Max(x.Precision, v.Precision);
+                x.SetPrecision(mx); v.SetPrecision(mx);
+            }
+            return x._Value.Equals(v._Value);
+        }
+
+        public static BigDecimal Parse(string strnum)
+        {
+            if (strnum.Contains(".")) {
+                string[] s = strnum.Split('.');
+                BigInteger inte = BigInteger.Parse(s[0]);
+                BigInteger dec = BigInteger.Parse(s[1]);
+                BigDecimal res = new BigDecimal(inte, s[1].Length);
+                res._Value += dec;
+                return res;
+            }
+            else
+            {
+                return new BigDecimal(BigInteger.Parse(strnum));
+            }
         }
 
         public override string ToString()
@@ -747,9 +819,19 @@ namespace iExpr.Extensions.Math.Numerics
                 case 0:
                     return "0";
                 case 1:
-                    return $"{Integer.ToString()}.{Decimal.ToString()}";
+                    {
+                        if (Precision == 0) return this._Value.ToString();
+                        var i = BigInteger.DivRem(this._Value, GetTenPow(Precision), out var d);
+                        //var t = Precision;
+                        return $"{i.ToString()}.{d.ToString().PadLeft(Precision,'0')}";
+                    }
                 case -1:
-                    return $"-{(-Integer).ToString()}.{(-Decimal).ToString($"D{Precision}")}";
+                    {
+                        if (Precision == 0) return this._Value.ToString();
+                        var i = BigInteger.DivRem(-this._Value, GetTenPow(Precision), out var d);
+                        return $"-{i.ToString()}.{d.ToString().PadLeft(Precision, '0')}";
+                    }
+
             }
             throw new Exception();
         }
@@ -758,8 +840,7 @@ namespace iExpr.Extensions.Math.Numerics
         {
             var hashCode = 1451633208;
             hashCode = hashCode * -1521134295 + base.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<BigInteger>.Default.GetHashCode(Integer);
-            hashCode = hashCode * -1521134295 + EqualityComparer<BigInteger>.Default.GetHashCode(Decimal);
+            hashCode = hashCode * -1521134295 + EqualityComparer<BigInteger>.Default.GetHashCode(_Value);
             hashCode = hashCode * -1521134295 + Precision.GetHashCode();
             return hashCode;
         }
