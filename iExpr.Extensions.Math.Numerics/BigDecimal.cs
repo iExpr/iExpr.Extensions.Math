@@ -798,13 +798,20 @@ namespace iExpr.Extensions.Math.Numerics
 
         public static BigDecimal Parse(string strnum)
         {
+            strnum = strnum.Trim();
             if (strnum.Contains(".")) {
                 string[] s = strnum.Split('.');
                 BigInteger inte = BigInteger.Parse(s[0]);
+                bool isn = false;
+                if (inte.Sign < 0)
+                {
+                    inte = -inte;isn = true;
+                }
                 BigInteger dec = BigInteger.Parse(s[1]);
+                if (dec.Sign < 0) throw new ArgumentException();
                 BigDecimal res = new BigDecimal(inte, s[1].Length);
                 res._Value += dec;
-                return res;
+                return isn?-res:res;
             }
             else
             {
@@ -823,13 +830,15 @@ namespace iExpr.Extensions.Math.Numerics
                         if (Precision == 0) return this._Value.ToString();
                         var i = BigInteger.DivRem(this._Value, GetTenPow(Precision), out var d);
                         //var t = Precision;
-                        return $"{i.ToString()}.{d.ToString().PadLeft(Precision,'0')}";
+                        if (d.Sign == 0) return i.ToString();
+                        return $"{i.ToString()}.{d.ToString().PadLeft(Precision,'0').TrimEnd('0')}";
                     }
                 case -1:
                     {
                         if (Precision == 0) return this._Value.ToString();
                         var i = BigInteger.DivRem(-this._Value, GetTenPow(Precision), out var d);
-                        return $"-{i.ToString()}.{d.ToString().PadLeft(Precision, '0')}";
+                        if (d.Sign == 0) return $"-{i.ToString()}";
+                        return $"-{i.ToString()}.{d.ToString().PadLeft(Precision, '0').TrimEnd('0')}";
                     }
 
             }
